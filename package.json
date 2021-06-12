@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "debug": "^4.0.0",
-    "inputformat-to-jstransformer": "git+ssh://git@github.com/arkadianriver/inputformat-to-jstransformer.git",
+    "inputformat-to-jstransformer": "https://codeload.github.com/arkadianriver/inputformat-to-jstransformer/legacy.tar.gz/main",
     "is-utf8": "^0.2.1",
     "jstransformer": "^1.0.0",
     "multimatch": "^4.0.0"
