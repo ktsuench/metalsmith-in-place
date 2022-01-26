@@ -27,6 +27,8 @@ You can pass options to `metalsmith-in-place` with the [Javascript API](https://
 * [engineOptions](#engineoptions): optional. Use this to pass options to the jstransformer that's rendering your files. The default is `{}`.
 * [suppressNoFilesError](#suppressnofileserror): optional. The no-files-to-process error will be suppressed. The default is `false`.
 * [setFilename](#setfilename): optional. Some templating engines, like [pug](https://github.com/pugjs/pug), need a `filename` property to be present in the options to be able to process relative includes, extends, etc. Setting this option to `true` will add the current filename to the options passed to each jstransformer. The default is `false`.
+* [stopAt](#stopAt): optional. Used to prematurely end transformation of files with chained extensions. The default is `''`.
+* [overrideExt](#overrideExt): optional. Used to replace file extensions with extensions in this setting. The default is `{}`.
 
 ### `pattern`
 
@@ -104,6 +106,44 @@ Set this option to `true` if you want to pass the current filename to each jstra
 ```
 
 Would overwrite `engineOptions.filename` with the absolute path for the file that's currently being processed, and pass that to the jstransformer. For now we're just passing `filename`, but if you encounter a jstransformer that requires a different property, like `path` or something else, let us know and we can add it.
+
+### `stopAt`
+
+Set this option to the required extension to stop at. Used to prematurely end transformation of files with chained extensions. The default is `''`. So this `metalsmith.json`:
+
+```json
+{
+  "source": "src",
+  "destination": "build",
+  "plugins": {
+    "metalsmith-in-place": {
+      "stopAt": "liquid"
+    }
+  }
+}
+```
+
+Would stop files from being transformed if the extension at the end of the filename matches `liquid`. For example, a file named `some-dir/file.md.liquid.pug` gets transformed using the pug jstransformer and then on the next pass the file is named `some-dir/file.md` which would be stopped at from further transforming. Such a situation arises when the output directory is also a source directory in metalsmith.
+
+### `overrideExt`
+
+Set this as an JS object with key being the path the match using `match` and the value being the extension to replace with. The default is `{}`. So this `metalsmith.json`:
+
+```json
+{
+  "source": "src",
+  "destination": "build",
+  "plugins": {
+    "metalsmith-in-place": {
+      "overrideExt": {
+        "*/*.liquid.md": ".md.liquid",
+      }
+    }
+  }
+}
+```
+
+Would consider files ending in `.liquid.md` as ending in `.md.liquid` instead. Use case for this is when using content checkers like Acrolinx which do not support files like `liquid` natively and end user does not have admin permissions to add the support into the checking system. By doing overriding extensions, end users can check directly on the source without having to do an intermediate conversion or a full transform to supported formats.
 
 ## Errors and debugging
 
